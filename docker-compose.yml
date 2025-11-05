@@ -1,0 +1,42 @@
+services:
+  node1:
+    image: gluster/gluster-centos:latest
+    container_name: node1
+    privileged: true
+    networks:
+      - glusternet
+    volumes:
+      - data1:/data/brick1
+    hostname: node1
+    command: /bin/bash -c "glusterd && tail -f /dev/null"
+
+  node2:
+    image: gluster/gluster-centos:latest
+    container_name: node2
+    privileged: true
+    networks:
+      - glusternet
+    volumes:
+      - data2:/data/brick1
+    hostname: node2
+    command: /bin/bash -c "glusterd && tail -f /dev/null"
+
+  client:
+    image: almalinux:9
+    container_name: client
+    privileged: true
+    networks:
+      - glusternet
+    depends_on:
+      - node1
+      - node2
+    tty: true
+    stdin_open: true
+
+networks:
+  glusternet:
+    driver: bridge
+
+volumes:
+  data1:
+  data2:
